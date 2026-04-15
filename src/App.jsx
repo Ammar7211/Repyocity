@@ -34,18 +34,20 @@ export default function App() {
   const [items, setItems] = useState([emptyItem()]);
   const [discount, setDiscount] = useState(0);
   const [paid, setPaid] = useState(false);
+  const [addShipping, setAddShipping] = useState(false); // New Shipping State
   const [sales, setSales] = useState([]);
   const [loadingSales, setLoadingSales] = useState(false);
   const [hoveredSale, setHoveredSale] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   // Calculation order: subtotal → +shipping → -discount → tax on result → total
+  const currentShipping = addShipping ? SHIPPING : 0;
   const itemsSubtotal = items.reduce((acc,it) => acc + it.qty*(Number(it.unitPrice)+Number(it.extraForSize)), 0);
   const subtotalWithShipping = itemsSubtotal;
   const discountAmount = Math.max(0, Number(discount) || 0);
   const afterDiscount = Math.max(0, subtotalWithShipping - discountAmount);
   const taxAmount = afterDiscount * TAX_RATE;
-  const totalDue = afterDiscount + taxAmount +  + SHIPPING;
+  const totalDue = afterDiscount + taxAmount + currentShipping;
 
   const showToast = (msg, type="success") => { setToast({msg,type}); setTimeout(()=>setToast(null),3000); };
   const addItem = () => setItems([...items, emptyItem()]);
@@ -66,7 +68,7 @@ export default function App() {
     const {error} = await supabase.from("invoices").insert([{
       customer_name: customer, invoice_date: invoiceDate,
       items: items.map(({id,...rest})=>rest),
-      subtotal: itemsSubtotal, shipping: SHIPPING, discount: discountAmount,
+      subtotal: itemsSubtotal, shipping: currentShipping, discount: discountAmount,
       sales_tax: taxAmount, total_due: totalDue, paid,
     }]);
     setSaving(false);
@@ -221,7 +223,7 @@ export default function App() {
           </button>
         </nav>
         <div className="sidebar-footer">
-          <span>980.494.0739</span><span>repyocityusa@gmail.com</span>
+          <span>980.494.0739</span><br/><span>repyocityusa@gmail.com</span>
         </div>
       </aside>
 
@@ -307,13 +309,18 @@ export default function App() {
                     <div className={`toggle-track ${paid?"paid":""}`}><div className="toggle-thumb"/></div>
                     <span className={`paid-label ${paid?"paid-text":"unpaid-text"}`}>{paid?"✓ PAID":"✗ UNPAID"}</span>
                   </div>
-                  <div className="shipping-badge"><Truck size={14}/><span>Shipping: $8.00 (fixed)</span></div>
+
+                  <label className="field-label" style={{marginTop: "16px"}}>Shipping Charges</label>
+                  <div className="paid-toggle" onClick={()=>setAddShipping(!addShipping)}>
+                    <div className={`toggle-track ${addShipping?"paid":""}`}><div className="toggle-thumb"/></div>
+                    <span className={`paid-label ${addShipping?"paid-text":"unpaid-text"}`}>{addShipping?"✓ $8.00 ADDED":"✗ NO SHIPPING"}</span>
+                  </div>
                 </div>
 
                 <div className="card totals-card">
                   <div className="totals-grid">
                     <div className="totals-row"><span>Items Subtotal</span><span>${itemsSubtotal.toFixed(2)}</span></div>
-                    <div className="totals-row"><span>Shipping</span><span className="shipping-val">+$8.00</span></div>
+                    <div className="totals-row"><span>Shipping</span><span className="shipping-val">+${currentShipping.toFixed(2)}</span></div>
                     <div className="totals-row discount-row">
                       <span>Discount</span>
                       <div className="discount-input-wrap">
@@ -348,7 +355,7 @@ export default function App() {
               </div>
               {loadingSales?(
                 <div className="loading-state"><Loader2 size={40} className="spin"/><p>Loading sales...</p></div>
-              ):sales.length===0?(
+              ):(sales.length===0?(
                 <div className="empty-state"><ShoppingBag size={56} opacity={0.3}/><p>No sales yet.</p></div>
               ):(
                 <div className="sales-grid">
@@ -406,7 +413,7 @@ export default function App() {
                     );
                   })}
                 </div>
-              )}
+              ))}
             </div>
           )}
         </div>
