@@ -177,7 +177,7 @@ export default function App() {
           <div style="margin-bottom:36px;">
             <p style="font-weight:900;font-size:13px;letter-spacing:1px;margin-bottom:8px;color:#000;text-transform:uppercase;">Payment Method</p>
             <table style="border-collapse:collapse;">
-              <tr><td style="font-size:13px;color:#000;padding:3px 0;font-weight:700;">CashApp:</td><td style="font-size:13px;color:#000;padding:3px 0 3px 10px;">@RepYoCityUS</td></tr>
+              <tr><td style="font-size:13px;color:#000;padding:3px 0;font-weight:700;">CashApp:</td><td style="font-size:13px;color:#000;padding:3px 0 3px 10px;">@RepYoCity</td></tr>
               <tr><td style="font-size:13px;color:#000;padding:3px 0;font-weight:700;">Venmo:</td><td style="font-size:13px;color:#000;padding:3px 0 3px 10px;">@Repyocity</td></tr>
               <tr><td style="font-size:13px;color:#000;padding:3px 0;font-weight:700;">Zelle:</td><td style="font-size:13px;color:#000;padding:3px 0 3px 10px;">Repyocityusa@gmail.com</td></tr>
             </table>
